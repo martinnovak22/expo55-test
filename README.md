@@ -1,56 +1,82 @@
-# Welcome to your Expo app 👋
+# Expo SDK 55 Native Router + Dynamic Color Demo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This project is an Expo SDK 55 TypeScript app focused on two Expo Router v55 capabilities:
 
-## Get started
+- Native tabs router behavior with iOS 26+ glass accessory support.
+- Dynamic platform color loading (Android Material dynamic + iOS system colors).
 
-1. Install dependencies
+## Tech setup
 
-   ```bash
-   npm install
-   ```
+- Expo SDK `~55.0.15`
+- Expo Router `~55.0.12`
+- TypeScript strict mode
+- Yarn (node-modules linker)
+- ESLint for RN/Expo linting
+- Biome for formatting
 
-2. Start the app
+## Run
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Install dependencies:
 
 ```bash
-npm run reset-project
+yarn install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Start Metro:
 
-### Other setup steps
+```bash
+yarn start
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Run iOS development build:
 
-## Learn more
+```bash
+yarn ios
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Run Android development build:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+yarn android
+```
 
-## Join the community
+## Code quality commands
 
-Join our community of developers creating universal apps.
+```bash
+yarn lint
+yarn format
+yarn tsc --noEmit
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## App structure
+
+- `src/app/_layout.tsx` root stack layout
+- `src/app/(tabs)/_layout.tsx` native tabs layout
+- `src/app/(tabs)/index.tsx` home showcase
+- `src/app/(tabs)/palette.tsx` platform palette showcase
+- `src/app/(tabs)/settings.tsx` diagnostics and manual test steps
+- `src/theme/use-app-theme.ts` dynamic color resolution + theme rerender hook
+
+## Manual test checklist
+
+1. Navigation
+- Switch tabs and verify selected icon/label state updates.
+- Confirm Home, Palette, and Settings routes render correctly.
+
+2. Android dynamic color
+- Toggle device light/dark mode.
+- Confirm palette and surfaces update without app restart.
+
+3. iOS native tabs glass behavior
+- On iOS 26+, confirm bottom accessory is visible.
+- On lower iOS versions, confirm fallback behavior without runtime errors.
+
+4. Stability
+- Verify safe area spacing in all tabs.
+- Verify no redbox errors at runtime.
+
+## References
+
+- Expo Router v55 blog: https://expo.dev/blog/expo-router-v55-more-native-navigation-more-powerful-web
+- Native tabs docs: https://docs.expo.dev/router/advanced/native-tabs/
+- Color API docs: https://docs.expo.dev/router/reference/color/
