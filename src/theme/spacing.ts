@@ -6,3 +6,8 @@ export const Spacing = {
   lg: 24,
   xl: 32,
 } as const;
+
+export const ScreenSpacing = {
+  contentPadding: Spacing.md,
+  contentBottomPadding: Spacing.xl,
+} as const;

@@ -4,7 +4,7 @@ import { DemoCard } from '@/components/demo-card';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { isIos26OrLater } from '@/theme/platform';
-import { Spacing } from '@/theme/spacing';
+import { ScreenSpacing, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
 
 function DiagnosticRow({ label, value }: { label: string; value: string }) {
@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: Spacing.md,
-    padding: Spacing.md,
-    paddingBottom: Spacing.xl,
+    padding: ScreenSpacing.contentPadding,
+    paddingBottom: ScreenSpacing.contentBottomPadding,
   },
   row: {
     alignItems: 'center',

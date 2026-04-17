@@ -4,7 +4,7 @@ import type { ColorValue } from 'react-native';
 import { DemoCard } from '@/components/demo-card';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
-import { Spacing } from '@/theme/spacing';
+import { ScreenSpacing, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
 
 function Swatch({ label, color }: { label: string; color: ColorValue }) {
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: Spacing.md,
-    padding: Spacing.md,
-    paddingBottom: Spacing.xl,
+    padding: ScreenSpacing.contentPadding,
+    paddingBottom: ScreenSpacing.contentBottomPadding,
   },
   swatchRow: {
     alignItems: 'center',
