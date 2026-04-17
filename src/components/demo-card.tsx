@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
-import { Spacing } from '@/theme/spacing';
+import { Border, Elevation, Radius, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
@@ -14,9 +14,13 @@ type DemoCardProps = {
 
 export function DemoCard({ title, subtitle, children }: DemoCardProps) {
   const theme = useAppTheme();
+  const isAndroid = Platform.OS === 'android';
 
   return (
-    <ThemeSurface variant={'surface'} style={[styles.card, { borderColor: theme.border }]}>
+    <ThemeSurface
+      variant={'surface'}
+      style={[styles.card, isAndroid && styles.cardAndroid, { borderColor: theme.border }]}
+    >
       <ThemeText variant={'subtitle'}>{title}</ThemeText>
       <ThemeText variant={'muted'}>{subtitle}</ThemeText>
       {children ? <View style={styles.content}>{children}</View> : null}
@@ -26,10 +30,14 @@ export function DemoCard({ title, subtitle, children }: DemoCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: 1,
-    borderRadius: 16,
+    borderWidth: Border.regular,
+    borderRadius: Radius.md,
     padding: Spacing.md,
     gap: Spacing.xs,
+  },
+  cardAndroid: {
+    borderWidth: Border.thin,
+    elevation: Elevation.low,
   },
   content: {
     marginTop: Spacing.xs,

@@ -6,6 +6,7 @@ import { ThemeText } from '@/components/theme-text';
 import { isIos26OrLater } from '@/theme/platform';
 import { ScreenSpacing, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
+import { useScrollContentPaddingBottom } from '@/theme/use-scroll-content-padding';
 
 function DiagnosticRow({ label, value }: { label: string; value: string }) {
   return (
@@ -19,10 +20,11 @@ function DiagnosticRow({ label, value }: { label: string; value: string }) {
 export default function SettingsScreen() {
   const theme = useAppTheme();
   const ios26OrLater = isIos26OrLater();
+  const paddingBottom = useScrollContentPaddingBottom();
 
   return (
     <ThemeSurface variant={'background'} style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: paddingBottom }]}>
         <ThemeText variant={'title'}>Diagnostics</ThemeText>
         <ThemeText variant={'muted'}>
           Quick checks for native tabs behavior and platform color loading.
@@ -59,7 +61,6 @@ const styles = StyleSheet.create({
   content: {
     gap: Spacing.md,
     padding: ScreenSpacing.contentPadding,
-    paddingBottom: ScreenSpacing.contentBottomPadding,
   },
   row: {
     alignItems: 'center',

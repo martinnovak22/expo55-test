@@ -12,3 +12,7 @@ export function isIos26OrLater(): boolean {
 
   return Number(Platform.Version) >= 26;
 }
+
+export function hasNativeBottomAccessory(): boolean {
+  return Platform.OS === 'ios' && isIos26OrLater();
+}

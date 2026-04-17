@@ -10,6 +10,10 @@ export type AppTheme = {
   mutedText: ColorValue;
   accent: ColorValue;
   onAccent: ColorValue;
+  secondary: ColorValue;
+  onSecondary: ColorValue;
+  tertiary: ColorValue;
+  onTertiary: ColorValue;
   border: ColorValue;
   danger: ColorValue;
 };
@@ -33,6 +37,10 @@ export function useAppTheme(): AppTheme {
           mutedText: '#9CA3AF',
           accent: '#38BDF8',
           onAccent: '#0F172A',
+          secondary: '#34D399',
+          onSecondary: '#0F172A',
+          tertiary: '#A78BFA',
+          onTertiary: '#0F172A',
           border: '#334155',
           danger: '#F87171',
         }
@@ -44,6 +52,10 @@ export function useAppTheme(): AppTheme {
           mutedText: '#475569',
           accent: '#0EA5E9',
           onAccent: '#FFFFFF',
+          secondary: '#10B981',
+          onSecondary: '#FFFFFF',
+          tertiary: '#7C3AED',
+          onTertiary: '#FFFFFF',
           border: '#CBD5E1',
           danger: '#DC2626',
         };
@@ -53,19 +65,19 @@ export function useAppTheme(): AppTheme {
     background:
       Platform.select({
         android: Color.android.dynamic.background,
-        ios: Color.ios.systemBackground,
+        ios: Color.ios.systemGroupedBackground,
         default: defaults.background,
       }) ?? defaults.background,
     surface:
       Platform.select({
         android: Color.android.dynamic.surface,
-        ios: Color.ios.secondarySystemBackground,
+        ios: Color.ios.secondarySystemGroupedBackground,
         default: defaults.surface,
       }) ?? defaults.surface,
     mutedSurface:
       Platform.select({
         android: Color.android.dynamic.surfaceContainer,
-        ios: Color.ios.tertiarySystemBackground,
+        ios: Color.ios.tertiarySystemGroupedBackground,
         default: defaults.mutedSurface,
       }) ?? defaults.mutedSurface,
     text:
@@ -92,9 +104,33 @@ export function useAppTheme(): AppTheme {
         ios: Color.ios.systemBackground,
         default: defaults.onAccent,
       }) ?? defaults.onAccent,
+    secondary:
+      Platform.select({
+        android: Color.android.dynamic.secondary,
+        ios: Color.ios.systemTeal,
+        default: defaults.secondary,
+      }) ?? defaults.secondary,
+    onSecondary:
+      Platform.select({
+        android: Color.android.dynamic.onSecondary,
+        ios: Color.ios.systemBackground,
+        default: defaults.onSecondary,
+      }) ?? defaults.onSecondary,
+    tertiary:
+      Platform.select({
+        android: Color.android.dynamic.tertiary,
+        ios: Color.ios.systemPurple,
+        default: defaults.tertiary,
+      }) ?? defaults.tertiary,
+    onTertiary:
+      Platform.select({
+        android: Color.android.dynamic.onTertiary,
+        ios: Color.ios.systemBackground,
+        default: defaults.onTertiary,
+      }) ?? defaults.onTertiary,
     border:
       Platform.select({
-        android: Color.android.dynamic.outline,
+        android: Color.android.dynamic.outlineVariant,
         ios: Color.ios.separator,
         default: defaults.border,
       }) ?? defaults.border,
