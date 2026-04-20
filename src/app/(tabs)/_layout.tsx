@@ -1,14 +1,55 @@
-import { Color } from 'expo-router';
+import { Color, usePathname, useRouter } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import { StyleSheet, View } from 'react-native';
-import { Product } from '@/constants/product';
+import { Pressable, StyleSheet, View } from 'react-native';
+
 import { ThemeText } from '@/components/theme-text';
-import { HAS_NATIVE_BOTTOM_ACCESSORY, IS_ANDROID } from '@/theme/platform';
-import { ControlSize, ScreenSpacing, Spacing } from '@/theme/spacing';
+import { Product } from '@/constants/product';
+import { ACTIVITY_ITEMS } from '@/features/activity/data';
+import { ActivityTabStateProvider, useActivityTabState } from '@/features/activity/tab-state';
+import { HAS_NATIVE_BOTTOM_ACCESSORY, IS_ANDROID, IS_IOS } from '@/theme/platform';
+import { ControlSize, Radius, ScreenSpacing, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
 
-export default function TabsLayout() {
+function BottomAccessoryChip() {
+  const router = useRouter();
+  const { filter, cycleFilter } = useActivityTabState();
+
+  const filterCount =
+    filter === 'all'
+      ? ACTIVITY_ITEMS.length
+      : ACTIVITY_ITEMS.filter((item) => item.status === filter).length;
+
+  const accessoryLabel =
+    filter === 'all' ? `Activity: all (${filterCount})` : `Activity: ${filter} (${filterCount})`;
+
+  return (
+    <View style={styles.accessoryInset}>
+      <Pressable
+        onPress={() => {
+          cycleFilter();
+          router.navigate('/palette');
+        }}
+        style={styles.accessory}
+      >
+        <ThemeText variant={'badge'} style={styles.accessoryText}>
+          {accessoryLabel}
+        </ThemeText>
+      </Pressable>
+    </View>
+  );
+}
+
+function TabsContent() {
+  const pathname = usePathname();
   const theme = useAppTheme();
+  const { filter } = useActivityTabState();
+
+  const pendingCount = ACTIVITY_ITEMS.filter((item) => item.status === 'pending').length;
+  const filteredCount =
+    filter === 'all'
+      ? ACTIVITY_ITEMS.length
+      : ACTIVITY_ITEMS.filter((item) => item.status === filter).length;
+  const filterBadge = filter === 'all' ? undefined : String(filteredCount);
 
   const tabIconColors = IS_ANDROID
     ? { default: theme.mutedText, selected: theme.onAccent }
@@ -18,20 +59,24 @@ export default function TabsLayout() {
     default: { color: theme.mutedText },
     selected: { color: theme.text },
   };
+  const showActivityAccessory = pathname === '/palette';
 
   return (
     <NativeTabs
       backgroundColor={IS_ANDROID ? theme.surface : Color.ios.systemGroupedBackground}
       blurEffect={HAS_NATIVE_BOTTOM_ACCESSORY ? 'systemUltraThinMaterial' : undefined}
-      minimizeBehavior={HAS_NATIVE_BOTTOM_ACCESSORY ? 'onScrollDown' : undefined}
+      minimizeBehavior={IS_IOS ? 'onScrollDown' : undefined}
       indicatorColor={IS_ANDROID ? theme.accent : undefined}
       iconColor={tabIconColors}
       labelStyle={tabLabelColors}
     >
-      <NativeTabs.Trigger name={'index'}>
+      <NativeTabs.Trigger name={'overview'}>
         <NativeTabs.Trigger.Label>{Product.tabs.overview}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
-          sf={{ default: 'chart.line.uptrend.xyaxis', selected: 'chart.line.uptrend.xyaxis.circle.fill' }}
+          sf={{
+            default: 'chart.line.uptrend.xyaxis',
+            selected: 'chart.line.uptrend.xyaxis.circle.fill',
+          }}
           md={'show_chart'}
           selectedColor={IS_ANDROID ? theme.onAccent : undefined}
         />
@@ -44,7 +89,19 @@ export default function TabsLayout() {
           md={'receipt_long'}
           selectedColor={IS_ANDROID ? theme.onAccent : undefined}
         />
+        <NativeTabs.Trigger.Badge>{filterBadge}</NativeTabs.Trigger.Badge>
       </NativeTabs.Trigger>
+
+      {IS_IOS ? (
+        <NativeTabs.Trigger name={'search'} role={'search'}>
+          <NativeTabs.Trigger.Label>{'Search'}</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+      ) : (
+        <NativeTabs.Trigger name={'search'}>
+          <NativeTabs.Trigger.Label>{'Search'}</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Icon md={'search'} />
+        </NativeTabs.Trigger>
+      )}
 
       <NativeTabs.Trigger name={'settings'}>
         <NativeTabs.Trigger.Label>{Product.tabs.diagnostics}</NativeTabs.Trigger.Label>
@@ -53,20 +110,25 @@ export default function TabsLayout() {
           md={'settings'}
           selectedColor={IS_ANDROID ? theme.onAccent : undefined}
         />
+        <NativeTabs.Trigger.Badge>
+          {pendingCount > 0 ? String(pendingCount) : undefined}
+        </NativeTabs.Trigger.Badge>
       </NativeTabs.Trigger>
 
-      {HAS_NATIVE_BOTTOM_ACCESSORY ? (
+      {HAS_NATIVE_BOTTOM_ACCESSORY && showActivityAccessory ? (
         <NativeTabs.BottomAccessory>
-          <View style={styles.accessoryInset}>
-            <View style={styles.accessory}>
-              <ThemeText variant={'badge'} style={styles.accessoryText}>
-                {Product.shortName} native glass accessory
-              </ThemeText>
-            </View>
-          </View>
+          <BottomAccessoryChip />
         </NativeTabs.BottomAccessory>
       ) : null}
     </NativeTabs>
+  );
+}
+
+export default function TabsLayout() {
+  return (
+    <ActivityTabStateProvider>
+      <TabsContent />
+    </ActivityTabStateProvider>
   );
 }
 
@@ -76,14 +138,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: ScreenSpacing.accessoryInsetHorizontal,
   },
   accessory: {
-    alignSelf: 'stretch',
-    width: '100%',
+    alignSelf: 'center',
     minHeight: ControlSize.accessoryMinHeight,
     paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.sm,
     marginVertical: Spacing.xs,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: Radius.pill,
   },
   accessoryText: {
     color: Color.ios.secondaryLabel,

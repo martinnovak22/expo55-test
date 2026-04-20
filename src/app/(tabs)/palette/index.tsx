@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
+import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { DemoCard } from '@/components/demo-card';
@@ -7,34 +8,37 @@ import { Screen } from '@/components/screen';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { Product } from '@/constants/product';
-import { IS_ANDROID } from '@/theme/platform';
+import { ActivityFilterChips } from '@/features/activity/components/filter-chips';
+import { ACTIVITY_ITEMS, matchesSearch } from '@/features/activity/data';
+import { useActivityTabState } from '@/features/activity/tab-state';
+import { IS_ANDROID, IS_IOS } from '@/theme/platform';
 import { Border, ControlSize, Radius, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
 
-const transactionItems = [
-  { merchant: 'Whole Foods Market', category: 'Groceries', amount: '-$84.63', status: 'settled' },
-  { merchant: 'Acme Payroll', category: 'Income', amount: '+$3,250.00', status: 'posted' },
-  { merchant: 'Transit Pass', category: 'Transport', amount: '-$45.00', status: 'pending' },
-] as const;
-
 export default function PaletteScreen() {
+  const router = useRouter();
   const theme = useAppTheme();
-  const [selectedMerchant, setSelectedMerchant] = useState<string>(
-    transactionItems[0]?.merchant ?? ''
+  const { filter, searchQuery } = useActivityTabState();
+
+  const filteredItems = useMemo(
+    () =>
+      ACTIVITY_ITEMS.filter((item) => {
+        const matchesFilter = filter === 'all' ? true : item.status === filter;
+        return matchesFilter && matchesSearch(item, searchQuery);
+      }),
+    [filter, searchQuery]
   );
 
   return (
     <Screen
       title={Product.tabs.activity}
       subtitle={'Theme Inspector for finance activity UI with live iOS and Android system colors.'}
+      showTitle={!IS_IOS}
+      useNativeHeader={IS_IOS}
     >
       <ThemeSurface
         variant={'surface'}
-        style={[
-          styles.tonePanel,
-          IS_ANDROID && styles.androidTonePanel,
-          { borderColor: theme.border },
-        ]}
+        style={[styles.tonePanel, IS_ANDROID && styles.androidTonePanel, { borderColor: theme.border }]}
       >
         <View
           pointerEvents={'none'}
@@ -71,21 +75,36 @@ export default function PaletteScreen() {
         title={'Recent Transactions Preview'}
         subtitle={'Production-like activity rows for spacing, typography, and status contrast checks.'}
       >
+        <ThemeText variant={'muted'}>
+          {`Active filter: ${filter}. Search query: ${searchQuery.trim() ? searchQuery : 'none'}.`}
+        </ThemeText>
+        <ActivityFilterChips />
+
         <View style={styles.transactionList}>
-          {transactionItems.map((item) => (
+          {filteredItems.map((item) => (
             <LivePressable
               key={item.merchant}
-              onPress={() => setSelectedMerchant(item.merchant)}
+              onPress={() => {
+                router.push({
+                  pathname: '/palette/[merchant]',
+                  params: {
+                    merchant: item.merchant,
+                    category: item.category,
+                    amount: item.amount,
+                    status: item.status,
+                  },
+                });
+              }}
               containerStyle={styles.transactionPressable}
               contentStyle={styles.transactionPressableContent}
               androidRippleColor={theme.mutedSurface}
             >
               <ThemeSurface
-                variant={selectedMerchant === item.merchant ? 'surface' : 'muted'}
+                variant={'surface'}
                 style={[
                   styles.transactionRow,
                   {
-                    borderColor: selectedMerchant === item.merchant ? theme.accent : theme.border,
+                    borderColor: theme.border,
                   },
                 ]}
               >
@@ -105,8 +124,8 @@ export default function PaletteScreen() {
                     style={[
                       styles.statusChip,
                       {
-                        backgroundColor:
-                          item.status === 'pending' ? theme.mutedSurface : theme.secondary,
+                        backgroundColor: item.status === 'pending' ? theme.mutedSurface : theme.secondary,
+                        borderColor: item.status === 'pending' ? theme.border : theme.secondary,
                       },
                     ]}
                   >
@@ -124,12 +143,15 @@ export default function PaletteScreen() {
             </LivePressable>
           ))}
         </View>
+
+        {filteredItems.length === 0 ? (
+          <ThemeSurface variant={'muted'} style={[styles.emptyState, { borderColor: theme.border }]}>
+            <ThemeText>{'No transactions match the current filter/search input.'}</ThemeText>
+          </ThemeSurface>
+        ) : null}
       </DemoCard>
 
-      <DemoCard
-        title={'Token Application QA'}
-        subtitle={'How role tokens render across common activity widgets.'}
-      >
+      <DemoCard title={'Token Application QA'} subtitle={'How role tokens render across common activity widgets.'}>
         <View style={styles.qaGrid}>
           <ThemeSurface variant={'muted'} style={[styles.qaTile, { borderColor: theme.border }]}>
             <ThemeText variant={'muted'}>Primary CTA</ThemeText>
@@ -192,15 +214,16 @@ const styles = StyleSheet.create({
   },
   transactionList: {
     gap: Spacing.xs,
+    marginTop: Spacing.xs,
   },
   transactionRow: {
     borderWidth: Border.regular,
     borderRadius: Radius.sm,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.sm,
   },
   transactionPressable: {
     borderRadius: Radius.sm,
@@ -216,14 +239,22 @@ const styles = StyleSheet.create({
   },
   transactionRight: {
     alignItems: 'flex-end',
-    gap: Spacing.xs,
+    gap: Spacing.xxs,
   },
   statusChip: {
     borderRadius: Radius.pill,
-    minHeight: ControlSize.badge,
+    minHeight: ControlSize.badge - Spacing.xxs,
     justifyContent: 'center',
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.sm + Spacing.xxs,
     paddingVertical: Spacing.xxs,
+    borderWidth: Border.regular,
+  },
+  emptyState: {
+    borderWidth: Border.regular,
+    borderRadius: Radius.sm,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.md,
+    marginTop: Spacing.xs,
   },
   qaGrid: {
     gap: Spacing.sm,

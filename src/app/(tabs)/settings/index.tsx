@@ -1,14 +1,14 @@
 import type { ColorValue } from 'react-native';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, Switch, View } from 'react-native';
 
 import { DemoCard } from '@/components/demo-card';
 import { Screen } from '@/components/screen';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { Product } from '@/constants/product';
-import { IS_ANDROID, IS_IOS_26_OR_LATER } from '@/theme/platform';
+import { IS_ANDROID, IS_IOS, IS_IOS_26_OR_LATER } from '@/theme/platform';
 import { Border, Radius, Spacing } from '@/theme/spacing';
-import { useAppTheme } from '@/theme/use-app-theme';
+import { useAppTheme, useThemePreferences } from '@/theme/use-app-theme';
 
 function DiagnosticRow({ label, value }: { label: string; value: string }) {
   return (
@@ -66,15 +66,24 @@ function StatusChip({ label, tone }: { label: string; tone: StatusTone }) {
 
 export default function SettingsScreen() {
   const theme = useAppTheme();
+  const { useAndroidDynamicColor, setUseAndroidDynamicColor } = useThemePreferences();
 
   return (
     <Screen
       title={Product.tabs.diagnostics}
-      subtitle={'Internal operations center for runtime status, platform capabilities, and release checks.'}
+      subtitle={
+        'Internal operations center for runtime status, platform capabilities, and release checks.'
+      }
+      showTitle={!IS_IOS}
+      useNativeHeader={IS_IOS}
     >
       <ThemeSurface
         variant={'surface'}
-        style={[styles.runtimeBanner, IS_ANDROID && styles.androidPanel, { borderColor: theme.border }]}
+        style={[
+          styles.runtimeBanner,
+          IS_ANDROID && styles.androidPanel,
+          { borderColor: theme.border },
+        ]}
       >
         <View style={styles.bannerTopRow}>
           <View style={styles.bannerTextWrap}>
@@ -92,10 +101,40 @@ export default function SettingsScreen() {
         </View>
       </ThemeSurface>
 
-      <DemoCard title={'Environment Details'} subtitle={'Current runtime values and resolved capabilities.'}>
+      <DemoCard
+        title={'Android Material You'}
+        subtitle={
+          'Toggle dynamic color sourcing to compare system palette vs static fallback tokens.'
+        }
+      >
+        <View style={styles.toggleRow}>
+          <View style={styles.toggleTextWrap}>
+            <ThemeText>{'Use dynamic color roles'}</ThemeText>
+            <ThemeText variant={'muted'}>
+              {IS_ANDROID
+                ? 'On uses Material You tokens; off uses built-in fallback palette.'
+                : 'Dynamic color source switching is Android-only.'}
+            </ThemeText>
+          </View>
+          <Switch
+            value={IS_ANDROID && useAndroidDynamicColor}
+            onValueChange={setUseAndroidDynamicColor}
+            disabled={!IS_ANDROID}
+          />
+        </View>
+      </DemoCard>
+
+      <DemoCard
+        title={'Environment Details'}
+        subtitle={'Current runtime values and resolved capabilities.'}
+      >
         <DiagnosticRow label={'Platform'} value={Platform.OS} />
         <DiagnosticRow label={'Platform version'} value={String(Platform.Version)} />
         <DiagnosticRow label={'Resolved scheme'} value={theme.scheme} />
+        <DiagnosticRow
+          label={'Android dynamic color'}
+          value={useAndroidDynamicColor ? 'enabled' : 'disabled'}
+        />
         <DiagnosticRow
           label={'iOS 26+ features'}
           value={IS_IOS_26_OR_LATER ? 'enabled' : 'fallback mode'}
@@ -156,7 +195,7 @@ export default function SettingsScreen() {
           2. Toggle device theme and confirm immediate palette updates.
         </ThemeText>
         <ThemeText variant={'muted'}>
-          3. Validate transaction row readability on light and dark surfaces.
+          3. Toggle Android dynamic color and compare accent/surface roles.
         </ThemeText>
         <ThemeText variant={'muted'}>
           4. On iOS 26+, confirm native glass accessory appears and collapses on scroll.
@@ -202,6 +241,16 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xxs,
     minHeight: Spacing.lg,
     maxWidth: '100%',
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.sm,
+  },
+  toggleTextWrap: {
+    flex: 1,
+    gap: Spacing.xxs,
   },
   healthRow: {
     flexDirection: 'row',
