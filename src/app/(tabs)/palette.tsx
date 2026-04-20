@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { DemoCard } from '@/components/demo-card';
 import { LivePressable } from '@/components/live-pressable';
+import { Screen } from '@/components/screen';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { Product } from '@/constants/product';
-import { IS_ANDROID, IS_IOS } from '@/theme/platform';
-import { Border, ControlSize, Radius, ScreenSpacing, Spacing } from '@/theme/spacing';
+import { IS_ANDROID } from '@/theme/platform';
+import { Border, ControlSize, Radius, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
-import { useScrollContentPaddingBottom } from '@/theme/use-scroll-content-padding';
 
 const transactionItems = [
   { merchant: 'Whole Foods Market', category: 'Groceries', amount: '-$84.63', status: 'settled' },
@@ -19,164 +19,141 @@ const transactionItems = [
 
 export default function PaletteScreen() {
   const theme = useAppTheme();
-  const paddingBottom = useScrollContentPaddingBottom();
   const [selectedMerchant, setSelectedMerchant] = useState<string>(
     transactionItems[0]?.merchant ?? ''
   );
 
   return (
-    <ThemeSurface variant={'background'} style={styles.screen}>
-      <ScrollView
-        contentContainerStyle={[
-          styles.content,
-          IS_IOS && styles.contentIos,
-          { paddingBottom: paddingBottom },
+    <Screen
+      title={Product.tabs.activity}
+      subtitle={'Theme Inspector for finance activity UI with live iOS and Android system colors.'}
+    >
+      <ThemeSurface
+        variant={'surface'}
+        style={[
+          styles.tonePanel,
+          IS_ANDROID && styles.androidTonePanel,
+          { borderColor: theme.border },
         ]}
-        showsVerticalScrollIndicator={false}
       >
-        <ThemeText variant={'title'}>{Product.tabs.activity}</ThemeText>
+        <View
+          pointerEvents={'none'}
+          style={[styles.toneOrb, styles.toneOrbLeft, { backgroundColor: theme.secondary }]}
+        />
+        <View
+          pointerEvents={'none'}
+          style={[styles.toneOrb, styles.toneOrbRight, { backgroundColor: theme.tertiary }]}
+        />
+        <ThemeText variant={'subtitle'}>Theme Inspector</ThemeText>
         <ThemeText variant={'muted'}>
-          Theme Inspector for finance activity UI with live iOS and Android system colors.
+          Validate tone usage for balances, state chips, and action containers.
         </ThemeText>
-
-        <ThemeSurface
-          variant={'surface'}
-          style={[
-            styles.tonePanel,
-            IS_ANDROID && styles.androidTonePanel,
-            { borderColor: theme.border },
-          ]}
-        >
-          <View
-            pointerEvents={'none'}
-            style={[styles.toneOrb, styles.toneOrbLeft, { backgroundColor: theme.secondary }]}
-          />
-          <View
-            pointerEvents={'none'}
-            style={[styles.toneOrb, styles.toneOrbRight, { backgroundColor: theme.tertiary }]}
-          />
-          <ThemeText variant={'subtitle'}>Theme Inspector</ThemeText>
-          <ThemeText variant={'muted'}>
-            Validate tone usage for balances, state chips, and action containers.
-          </ThemeText>
-          <View style={styles.toneRow}>
-            <View style={[styles.toneChip, { backgroundColor: theme.accent }]}>
-              <ThemeText variant={'badge'} style={{ color: theme.onAccent }}>
-                Credit
-              </ThemeText>
-            </View>
-            <View style={[styles.toneChip, { backgroundColor: theme.secondary }]}>
-              <ThemeText variant={'badge'} style={{ color: theme.onSecondary }}>
-                Invest
-              </ThemeText>
-            </View>
-            <View style={[styles.toneChip, { backgroundColor: theme.tertiary }]}>
-              <ThemeText variant={'badge'} style={{ color: theme.onTertiary }}>
-                Save
-              </ThemeText>
-            </View>
+        <View style={styles.toneRow}>
+          <View style={[styles.toneChip, { backgroundColor: theme.accent }]}>
+            <ThemeText variant={'badge'} style={{ color: theme.onAccent }}>
+              Credit
+            </ThemeText>
           </View>
-        </ThemeSurface>
+          <View style={[styles.toneChip, { backgroundColor: theme.secondary }]}>
+            <ThemeText variant={'badge'} style={{ color: theme.onSecondary }}>
+              Invest
+            </ThemeText>
+          </View>
+          <View style={[styles.toneChip, { backgroundColor: theme.tertiary }]}>
+            <ThemeText variant={'badge'} style={{ color: theme.onTertiary }}>
+              Save
+            </ThemeText>
+          </View>
+        </View>
+      </ThemeSurface>
 
-        <DemoCard
-          title={'Recent Transactions Preview'}
-          subtitle={'Production-like activity rows for spacing, typography, and status contrast checks.'}
-        >
-          <View style={styles.transactionList}>
-            {transactionItems.map((item) => (
-              <LivePressable
-                key={item.merchant}
-                onPress={() => setSelectedMerchant(item.merchant)}
-                containerStyle={styles.transactionPressable}
-                contentStyle={styles.transactionPressableContent}
-                androidRippleColor={theme.mutedSurface}
+      <DemoCard
+        title={'Recent Transactions Preview'}
+        subtitle={'Production-like activity rows for spacing, typography, and status contrast checks.'}
+      >
+        <View style={styles.transactionList}>
+          {transactionItems.map((item) => (
+            <LivePressable
+              key={item.merchant}
+              onPress={() => setSelectedMerchant(item.merchant)}
+              containerStyle={styles.transactionPressable}
+              contentStyle={styles.transactionPressableContent}
+              androidRippleColor={theme.mutedSurface}
+            >
+              <ThemeSurface
+                variant={selectedMerchant === item.merchant ? 'surface' : 'muted'}
+                style={[
+                  styles.transactionRow,
+                  {
+                    borderColor: selectedMerchant === item.merchant ? theme.accent : theme.border,
+                  },
+                ]}
               >
-                <ThemeSurface
-                  variant={selectedMerchant === item.merchant ? 'surface' : 'muted'}
-                  style={[
-                    styles.transactionRow,
-                    {
-                      borderColor: selectedMerchant === item.merchant ? theme.accent : theme.border,
-                    },
-                  ]}
-                >
-                  <View style={styles.transactionLeft}>
-                    <ThemeText>{item.merchant}</ThemeText>
-                    <ThemeText variant={'muted'}>{item.category}</ThemeText>
-                  </View>
-                  <View style={styles.transactionRight}>
+                <View style={styles.transactionLeft}>
+                  <ThemeText>{item.merchant}</ThemeText>
+                  <ThemeText variant={'muted'}>{item.category}</ThemeText>
+                </View>
+                <View style={styles.transactionRight}>
+                  <ThemeText
+                    style={{
+                      color: item.amount.startsWith('+') ? theme.accent : theme.text,
+                    }}
+                  >
+                    {item.amount}
+                  </ThemeText>
+                  <View
+                    style={[
+                      styles.statusChip,
+                      {
+                        backgroundColor:
+                          item.status === 'pending' ? theme.mutedSurface : theme.secondary,
+                      },
+                    ]}
+                  >
                     <ThemeText
+                      variant={'badge'}
                       style={{
-                        color: item.amount.startsWith('+') ? theme.accent : theme.text,
+                        color: item.status === 'pending' ? theme.mutedText : theme.onSecondary,
                       }}
                     >
-                      {item.amount}
+                      {item.status}
                     </ThemeText>
-                    <View
-                      style={[
-                        styles.statusChip,
-                        {
-                          backgroundColor:
-                            item.status === 'pending' ? theme.mutedSurface : theme.secondary,
-                        },
-                      ]}
-                    >
-                      <ThemeText
-                        variant={'badge'}
-                        style={{
-                          color: item.status === 'pending' ? theme.mutedText : theme.onSecondary,
-                        }}
-                      >
-                        {item.status}
-                      </ThemeText>
-                    </View>
                   </View>
-                </ThemeSurface>
-              </LivePressable>
-            ))}
-          </View>
-        </DemoCard>
+                </View>
+              </ThemeSurface>
+            </LivePressable>
+          ))}
+        </View>
+      </DemoCard>
 
-        <DemoCard
-          title={'Token Application QA'}
-          subtitle={'How role tokens render across common activity widgets.'}
-        >
-          <View style={styles.qaGrid}>
-            <ThemeSurface variant={'muted'} style={[styles.qaTile, { borderColor: theme.border }]}>
-              <ThemeText variant={'muted'}>Primary CTA</ThemeText>
-              <View style={[styles.qaPill, { backgroundColor: theme.accent }]}>
-                <ThemeText variant={'badge'} style={{ color: theme.onAccent }}>
-                  Transfer
-                </ThemeText>
-              </View>
-            </ThemeSurface>
-            <ThemeSurface variant={'muted'} style={[styles.qaTile, { borderColor: theme.border }]}>
-              <ThemeText variant={'muted'}>Risk State</ThemeText>
-              <View style={[styles.qaPill, { backgroundColor: theme.danger }]}>
-                <ThemeText variant={'badge'} style={{ color: theme.onAccent }}>
-                  Overspent
-                </ThemeText>
-              </View>
-            </ThemeSurface>
-          </View>
-        </DemoCard>
-
-      </ScrollView>
-    </ThemeSurface>
+      <DemoCard
+        title={'Token Application QA'}
+        subtitle={'How role tokens render across common activity widgets.'}
+      >
+        <View style={styles.qaGrid}>
+          <ThemeSurface variant={'muted'} style={[styles.qaTile, { borderColor: theme.border }]}>
+            <ThemeText variant={'muted'}>Primary CTA</ThemeText>
+            <View style={[styles.qaPill, { backgroundColor: theme.accent }]}>
+              <ThemeText variant={'badge'} style={{ color: theme.onAccent }}>
+                Transfer
+              </ThemeText>
+            </View>
+          </ThemeSurface>
+          <ThemeSurface variant={'muted'} style={[styles.qaTile, { borderColor: theme.border }]}>
+            <ThemeText variant={'muted'}>Risk State</ThemeText>
+            <View style={[styles.qaPill, { backgroundColor: theme.danger }]}>
+              <ThemeText variant={'badge'} style={{ color: theme.onAccent }}>
+                Overspent
+              </ThemeText>
+            </View>
+          </ThemeSurface>
+        </View>
+      </DemoCard>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  content: {
-    gap: Spacing.md,
-    padding: ScreenSpacing.contentPadding,
-  },
-  contentIos: {
-    paddingHorizontal: Spacing.lg,
-  },
   tonePanel: {
     borderWidth: Border.regular,
     borderRadius: Radius.md,
