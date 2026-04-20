@@ -1,13 +1,13 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { DemoCard } from '@/components/demo-card';
 import { Screen } from '@/components/screen';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
+import { IS_ANDROID, IS_IOS } from '@/theme/platform';
 import { Border, Radius, Spacing } from '@/theme/spacing';
-import { IS_ANDROID } from '@/theme/platform';
 import { useAppTheme } from '@/theme/use-app-theme';
 
 export default function MerchantDetailScreen() {
@@ -37,18 +37,11 @@ export default function MerchantDetailScreen() {
         title={merchant}
         showTitle={IS_ANDROID}
         useNativeHeader={!IS_ANDROID}
+        contentContainerStyle={IS_IOS ? styles.iosContentInset : undefined}
         androidHeaderLeft={
           IS_ANDROID ? (
-            <Pressable
-              onPress={() => router.back()}
-              style={styles.backButton}
-              hitSlop={Spacing.xs}
-            >
-              <MaterialIcons
-                name={'arrow-back-ios-new'}
-                size={22}
-                color={String(theme.onAccent)}
-              />
+            <Pressable onPress={() => router.back()} style={styles.backButton} hitSlop={Spacing.xs}>
+              <MaterialIcons name={'arrow-back-ios-new'} size={22} color={String(theme.onAccent)} />
             </Pressable>
           ) : null
         }
@@ -91,6 +84,9 @@ const styles = StyleSheet.create({
     minWidth: Spacing.lg,
     justifyContent: 'center',
     alignItems: 'flex-start',
+  },
+  iosContentInset: {
+    paddingTop: Spacing.md,
   },
   row: {
     alignItems: 'center',

@@ -45,20 +45,17 @@ function TabsContent() {
   const { filter } = useActivityTabState();
 
   const pendingCount = ACTIVITY_ITEMS.filter((item) => item.status === 'pending').length;
-  const filteredCount =
-    filter === 'all'
-      ? ACTIVITY_ITEMS.length
-      : ACTIVITY_ITEMS.filter((item) => item.status === filter).length;
-  const filterBadge = filter === 'all' ? undefined : String(filteredCount);
 
   const tabIconColors = IS_ANDROID
     ? { default: theme.mutedText, selected: theme.onAccent }
-    : { default: theme.mutedText, selected: theme.text };
+    : undefined;
 
-  const tabLabelColors = {
-    default: { color: theme.mutedText },
-    selected: { color: theme.text },
-  };
+  const tabLabelColors = IS_ANDROID
+    ? {
+        default: { color: theme.mutedText },
+        selected: { color: theme.onAccent },
+      }
+    : undefined;
   const showActivityAccessory = pathname === '/palette';
 
   return (
@@ -89,7 +86,6 @@ function TabsContent() {
           md={'receipt_long'}
           selectedColor={IS_ANDROID ? theme.onAccent : undefined}
         />
-        <NativeTabs.Trigger.Badge>{filterBadge}</NativeTabs.Trigger.Badge>
       </NativeTabs.Trigger>
 
       {IS_IOS ? (

@@ -1,19 +1,54 @@
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
-import { DARK_THEME, LIGHT_THEME, type AppTheme } from '@/theme/app-theme';
 
-const ThemeContext = createContext<AppTheme>(LIGHT_THEME);
+import { buildTheme, type AppTheme } from '@/theme/app-theme';
+
+type ThemePreferencesContextValue = {
+  theme: AppTheme;
+  useAndroidDynamicColor: boolean;
+  setUseAndroidDynamicColor: (enabled: boolean) => void;
+};
+
+const ThemePreferencesContext = createContext<ThemePreferencesContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Single subscription to the system color scheme. Consumers read the
-  // resulting AppTheme via context, so they re-render only when the
-  // scheme flips — not on every Platform.select per role per render.
   const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? DARK_THEME : LIGHT_THEME;
+  const [useAndroidDynamicColor, setUseAndroidDynamicColor] = useState(true);
 
-  return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
+  const value = useMemo(() => {
+    const resolvedScheme = scheme === 'dark' ? 'dark' : 'light';
+
+    return {
+      theme: buildTheme(resolvedScheme, { useAndroidDynamicColor }),
+      useAndroidDynamicColor,
+      setUseAndroidDynamicColor,
+    };
+  }, [scheme, useAndroidDynamicColor]);
+
+  return (
+    <ThemePreferencesContext.Provider value={value}>{children}</ThemePreferencesContext.Provider>
+  );
 }
 
 export function useAppTheme(): AppTheme {
-  return useContext(ThemeContext);
+  const value = useContext(ThemePreferencesContext);
+
+  if (!value) {
+    throw new Error('useAppTheme must be used inside ThemeProvider');
+  }
+
+  return value.theme;
+}
+
+export function useThemePreferences() {
+  const value = useContext(ThemePreferencesContext);
+
+  if (!value) {
+    throw new Error('useThemePreferences must be used inside ThemeProvider');
+  }
+
+  return {
+    useAndroidDynamicColor: value.useAndroidDynamicColor,
+    setUseAndroidDynamicColor: value.setUseAndroidDynamicColor,
+  };
 }

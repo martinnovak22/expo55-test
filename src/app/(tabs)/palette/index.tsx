@@ -38,7 +38,11 @@ export default function PaletteScreen() {
     >
       <ThemeSurface
         variant={'surface'}
-        style={[styles.tonePanel, IS_ANDROID && styles.androidTonePanel, { borderColor: theme.border }]}
+        style={[
+          styles.tonePanel,
+          IS_ANDROID && styles.androidTonePanel,
+          { borderColor: theme.border },
+        ]}
       >
         <View
           pointerEvents={'none'}
@@ -73,7 +77,9 @@ export default function PaletteScreen() {
 
       <DemoCard
         title={'Recent Transactions Preview'}
-        subtitle={'Production-like activity rows for spacing, typography, and status contrast checks.'}
+        subtitle={
+          'Production-like activity rows for spacing, typography, and status contrast checks.'
+        }
       >
         <ThemeText variant={'muted'}>
           {`Active filter: ${filter}. Search query: ${searchQuery.trim() ? searchQuery : 'none'}.`}
@@ -124,7 +130,8 @@ export default function PaletteScreen() {
                     style={[
                       styles.statusChip,
                       {
-                        backgroundColor: item.status === 'pending' ? theme.mutedSurface : theme.secondary,
+                        backgroundColor:
+                          item.status === 'pending' ? theme.mutedSurface : theme.secondary,
                         borderColor: item.status === 'pending' ? theme.border : theme.secondary,
                       },
                     ]}
@@ -145,13 +152,19 @@ export default function PaletteScreen() {
         </View>
 
         {filteredItems.length === 0 ? (
-          <ThemeSurface variant={'muted'} style={[styles.emptyState, { borderColor: theme.border }]}>
+          <ThemeSurface
+            variant={'muted'}
+            style={[styles.emptyState, { borderColor: theme.border }]}
+          >
             <ThemeText>{'No transactions match the current filter/search input.'}</ThemeText>
           </ThemeSurface>
         ) : null}
       </DemoCard>
 
-      <DemoCard title={'Token Application QA'} subtitle={'How role tokens render across common activity widgets.'}>
+      <DemoCard
+        title={'Token Application QA'}
+        subtitle={'How role tokens render across common activity widgets.'}
+      >
         <View style={styles.qaGrid}>
           <ThemeSurface variant={'muted'} style={[styles.qaTile, { borderColor: theme.border }]}>
             <ThemeText variant={'muted'}>Primary CTA</ThemeText>

@@ -22,6 +22,10 @@ export type AppTheme = {
 
 type ThemePalette = Omit<AppTheme, 'scheme'>;
 
+type ThemeBuildOptions = {
+  useAndroidDynamicColor: boolean;
+};
+
 const LIGHT_FALLBACK: ThemePalette = {
   background: '#F8FAFC',
   surface: '#FFFFFF',
@@ -54,92 +58,103 @@ const DARK_FALLBACK: ThemePalette = {
   danger: '#F87171',
 };
 
-// Platform.select is evaluated once at module load. On Android the resolved
-// Color.android.dynamic.* tokens natively track Material You scheme changes;
-// on iOS the Color.ios.* tokens do the same. The fallback map only applies
-// on web / non-native runtimes.
-function resolvePalette(fallback: ThemePalette): ThemePalette {
+function resolvePalette(
+  fallback: ThemePalette,
+  { useAndroidDynamicColor }: ThemeBuildOptions
+): ThemePalette {
   return {
     background:
       Platform.select({
-        android: Color.android.dynamic.background,
+        android: useAndroidDynamicColor ? Color.android.dynamic.background : fallback.background,
         ios: Color.ios.systemGroupedBackground,
         default: fallback.background,
       }) ?? fallback.background,
     surface:
       Platform.select({
-        android: Color.android.dynamic.surface,
+        android: useAndroidDynamicColor ? Color.android.dynamic.surface : fallback.surface,
         ios: Color.ios.secondarySystemGroupedBackground,
         default: fallback.surface,
       }) ?? fallback.surface,
     mutedSurface:
       Platform.select({
-        android: Color.android.dynamic.surfaceContainer,
+        android: useAndroidDynamicColor
+          ? Color.android.dynamic.surfaceContainer
+          : fallback.mutedSurface,
         ios: Color.ios.tertiarySystemGroupedBackground,
         default: fallback.mutedSurface,
       }) ?? fallback.mutedSurface,
     text:
       Platform.select({
-        android: Color.android.dynamic.onSurface,
+        android: useAndroidDynamicColor ? Color.android.dynamic.onSurface : fallback.text,
         ios: Color.ios.label,
         default: fallback.text,
       }) ?? fallback.text,
     mutedText:
       Platform.select({
-        android: Color.android.dynamic.onSurfaceVariant,
+        android: useAndroidDynamicColor
+          ? Color.android.dynamic.onSurfaceVariant
+          : fallback.mutedText,
         ios: Color.ios.secondaryLabel,
         default: fallback.mutedText,
       }) ?? fallback.mutedText,
     accent:
       Platform.select({
-        android: Color.android.dynamic.primary,
+        android: useAndroidDynamicColor ? Color.android.dynamic.primary : fallback.accent,
         ios: Color.ios.systemBlue,
         default: fallback.accent,
       }) ?? fallback.accent,
     onAccent:
       Platform.select({
-        android: Color.android.dynamic.onPrimary,
+        android: useAndroidDynamicColor ? Color.android.dynamic.onPrimary : fallback.onAccent,
         ios: Color.ios.systemBackground,
         default: fallback.onAccent,
       }) ?? fallback.onAccent,
     secondary:
       Platform.select({
-        android: Color.android.dynamic.secondary,
+        android: useAndroidDynamicColor ? Color.android.dynamic.secondary : fallback.secondary,
         ios: Color.ios.systemTeal,
         default: fallback.secondary,
       }) ?? fallback.secondary,
     onSecondary:
       Platform.select({
-        android: Color.android.dynamic.onSecondary,
+        android: useAndroidDynamicColor ? Color.android.dynamic.onSecondary : fallback.onSecondary,
         ios: Color.ios.systemBackground,
         default: fallback.onSecondary,
       }) ?? fallback.onSecondary,
     tertiary:
       Platform.select({
-        android: Color.android.dynamic.tertiary,
+        android: useAndroidDynamicColor ? Color.android.dynamic.tertiary : fallback.tertiary,
         ios: Color.ios.systemPurple,
         default: fallback.tertiary,
       }) ?? fallback.tertiary,
     onTertiary:
       Platform.select({
-        android: Color.android.dynamic.onTertiary,
+        android: useAndroidDynamicColor ? Color.android.dynamic.onTertiary : fallback.onTertiary,
         ios: Color.ios.systemBackground,
         default: fallback.onTertiary,
       }) ?? fallback.onTertiary,
     border:
       Platform.select({
-        android: Color.android.dynamic.outlineVariant,
+        android: useAndroidDynamicColor ? Color.android.dynamic.outlineVariant : fallback.border,
         ios: Color.ios.separator,
         default: fallback.border,
       }) ?? fallback.border,
     danger:
       Platform.select({
-        android: Color.android.dynamic.error,
+        android: useAndroidDynamicColor ? Color.android.dynamic.error : fallback.danger,
         ios: Color.ios.systemRed,
         default: fallback.danger,
       }) ?? fallback.danger,
   };
 }
 
-export const LIGHT_THEME: AppTheme = { scheme: 'light', ...resolvePalette(LIGHT_FALLBACK) };
-export const DARK_THEME: AppTheme = { scheme: 'dark', ...resolvePalette(DARK_FALLBACK) };
+export function buildTheme(
+  scheme: ColorScheme,
+  options: ThemeBuildOptions = { useAndroidDynamicColor: true }
+): AppTheme {
+  const fallback = scheme === 'dark' ? DARK_FALLBACK : LIGHT_FALLBACK;
+  return { scheme, ...resolvePalette(fallback, options) };
+}
+
+export const LIGHT_THEME: AppTheme = buildTheme('light');
+export const DARK_THEME: AppTheme = buildTheme('dark');

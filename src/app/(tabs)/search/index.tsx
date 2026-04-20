@@ -71,18 +71,30 @@ export default function SearchScreen() {
         title={'Live Query'}
         subtitle={'Preview of the current query state shared with the Activity tab.'}
       >
-        <ThemeText variant={'muted'}>{`Query: ${searchQuery.trim() ? searchQuery : 'none'}`}</ThemeText>
+        <ThemeText
+          variant={'muted'}
+        >{`Query: ${searchQuery.trim() ? searchQuery : 'none'}`}</ThemeText>
       </DemoCard>
 
-      <DemoCard title={'Matching Activity Rows'} subtitle={'Preview of transactions matching the active search query.'}>
+      <DemoCard
+        title={'Matching Activity Rows'}
+        subtitle={'Preview of transactions matching the active search query.'}
+      >
         <View style={styles.results}>
           {results.map((item) => (
-            <View key={`${item.merchant}-${item.amount}`} style={[styles.resultRow, { borderColor: theme.border }]}>
+            <View
+              key={`${item.merchant}-${item.amount}`}
+              style={[styles.resultRow, { borderColor: theme.border }]}
+            >
               <ThemeText>{item.merchant}</ThemeText>
-              <ThemeText variant={'muted'}>{`${item.category} • ${item.status} • ${item.amount}`}</ThemeText>
+              <ThemeText
+                variant={'muted'}
+              >{`${item.category} • ${item.status} • ${item.amount}`}</ThemeText>
             </View>
           ))}
-          {results.length === 0 ? <ThemeText variant={'muted'}>{'No results found.'}</ThemeText> : null}
+          {results.length === 0 ? (
+            <ThemeText variant={'muted'}>{'No results found.'}</ThemeText>
+          ) : null}
         </View>
       </DemoCard>
     </Screen>

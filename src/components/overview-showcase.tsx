@@ -38,7 +38,7 @@ export function OverviewShowcase() {
   const [transferTo, setTransferTo] = useState('High Yield Savings');
   const [transferAmount, setTransferAmount] = useState('350');
   const [lastAction, setLastAction] = useState<'none' | 'reset' | 'schedule' | 'quick-action'>(
-    'none',
+    'none'
   );
 
   return (
@@ -76,7 +76,11 @@ export function OverviewShowcase() {
           <ThemeSurface
             key={account.title}
             variant={'muted'}
-            style={[styles.accountCard, IS_ANDROID && styles.androidPanel, { borderColor: theme.border }]}
+            style={[
+              styles.accountCard,
+              IS_ANDROID && styles.androidPanel,
+              { borderColor: theme.border },
+            ]}
           >
             <ThemeText variant={'muted'}>{account.title}</ThemeText>
             <ThemeText variant={'subtitle'}>{account.amount}</ThemeText>
@@ -132,7 +136,9 @@ export function OverviewShowcase() {
         ]}
       >
         <ThemeText variant={'subtitle'}>Allocation Snapshot</ThemeText>
-        <ThemeText variant={'muted'}>Sample portfolio composition using live app theme roles.</ThemeText>
+        <ThemeText variant={'muted'}>
+          Sample portfolio composition using live app theme roles.
+        </ThemeText>
         <View style={styles.allocationTrack}>
           <View style={[styles.allocationSegment, { flex: 5, backgroundColor: theme.accent }]} />
           <View style={[styles.allocationSegment, { flex: 3, backgroundColor: theme.secondary }]} />

@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
 export type ActivityFilter = 'all' | 'settled' | 'posted' | 'pending';
 
@@ -44,7 +37,9 @@ export function ActivityTabStateProvider({ children }: { children: ReactNode }) 
     [cycleFilter, filter, searchQuery]
   );
 
-  return <ActivityTabStateContext.Provider value={value}>{children}</ActivityTabStateContext.Provider>;
+  return (
+    <ActivityTabStateContext.Provider value={value}>{children}</ActivityTabStateContext.Provider>
+  );
 }
 
 export function useActivityTabState(): ActivityTabStateValue {

@@ -1,11 +1,10 @@
 import { type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-
+import { ThemeSurface } from '@/components/theme-surface';
+import { ThemeText } from '@/components/theme-text';
 import { IS_ANDROID, IS_IOS } from '@/theme/platform';
 import { Border, Elevation, Radius, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
-import { ThemeSurface } from '@/components/theme-surface';
-import { ThemeText } from '@/components/theme-text';
 
 type DemoCardProps = {
   title: string;
@@ -51,6 +50,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
   },
   content: {
-    marginTop: Spacing.xs,
+    gap: Spacing.sm,
   },
 });
