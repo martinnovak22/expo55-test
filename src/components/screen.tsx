@@ -5,7 +5,10 @@ import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { IS_IOS } from '@/theme/platform';
 import { ScreenSpacing, Spacing } from '@/theme/spacing';
-import { useScrollContentPaddingBottom } from '@/theme/use-scroll-content-padding';
+import {
+  useScrollContentPaddingBottom,
+  useScrollContentPaddingTop,
+} from '@/theme/use-scroll-content-padding';
 
 type ScreenProps = {
   title: string;
@@ -14,6 +17,7 @@ type ScreenProps = {
 };
 
 export function Screen({ title, subtitle, children }: ScreenProps) {
+  const paddingTop = useScrollContentPaddingTop();
   const paddingBottom = useScrollContentPaddingBottom();
 
   return (
@@ -22,8 +26,9 @@ export function Screen({ title, subtitle, children }: ScreenProps) {
         contentContainerStyle={[
           styles.content,
           IS_IOS && styles.contentIos,
-          { paddingBottom: paddingBottom },
+          { paddingTop, paddingBottom },
         ]}
+        contentInsetAdjustmentBehavior={'never'}
         showsVerticalScrollIndicator={false}
       >
         <ThemeText variant={'title'}>{title}</ThemeText>
@@ -40,7 +45,7 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: Spacing.md,
-    padding: ScreenSpacing.contentPadding,
+    paddingHorizontal: ScreenSpacing.contentPadding,
   },
   contentIos: {
     paddingHorizontal: Spacing.lg,
