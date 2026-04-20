@@ -1,13 +1,14 @@
-import { useRef, type ReactNode } from 'react';
+import { useMemo, useRef, type ReactNode } from 'react';
 import {
   Animated,
-  Platform,
   Pressable,
   type ColorValue,
   type PressableProps,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+
+import { IS_ANDROID } from '@/theme/platform';
 
 type LivePressableProps = Omit<PressableProps, 'style' | 'children'> & {
   children: ReactNode;
@@ -16,6 +17,14 @@ type LivePressableProps = Omit<PressableProps, 'style' | 'children'> & {
   scaleTo?: number;
   androidRippleColor?: ColorValue;
 };
+
+const SPRING_CONFIG = {
+  useNativeDriver: true,
+  speed: 28,
+  bounciness: 0,
+} as const;
+
+const DEFAULT_RIPPLE_COLOR: ColorValue = '#D4D4D8';
 
 export function LivePressable({
   children,
@@ -28,28 +37,23 @@ export function LivePressable({
   ...props
 }: LivePressableProps) {
   const scale = useRef(new Animated.Value(1)).current;
-  const isAndroid = Platform.OS === 'android';
+
+  const androidRipple = useMemo(
+    () =>
+      IS_ANDROID
+        ? { color: androidRippleColor ?? DEFAULT_RIPPLE_COLOR, borderless: false }
+        : undefined,
+    [androidRippleColor]
+  );
 
   const animateTo = (value: number) => {
-    Animated.spring(scale, {
-      toValue: value,
-      useNativeDriver: true,
-      speed: 28,
-      bounciness: 0,
-    }).start();
+    Animated.spring(scale, { ...SPRING_CONFIG, toValue: value }).start();
   };
 
   return (
     <Pressable
       {...props}
-      android_ripple={
-        isAndroid
-          ? {
-              color: androidRippleColor ?? '#D4D4D8',
-              borderless: false,
-            }
-          : undefined
-      }
+      android_ripple={androidRipple}
       onPressIn={(event) => {
         animateTo(scaleTo);
         onPressIn?.(event);

@@ -1,5 +1,6 @@
-import { Platform, Text, type TextProps } from 'react-native';
+import { StyleSheet, Text, type TextProps, type TextStyle } from 'react-native';
 
+import { IS_IOS } from '@/theme/platform';
 import { useAppTheme } from '@/theme/use-app-theme';
 
 type TextVariant = 'default' | 'muted' | 'title' | 'subtitle' | 'badge';
@@ -8,38 +9,41 @@ type ThemeTextProps = TextProps & {
   variant?: TextVariant;
 };
 
+// Variant styles only depend on platform, not on theme or props, so
+// StyleSheet.create runs once at module load.
+const variantStyles = StyleSheet.create<Record<TextVariant, TextStyle>>({
+  default: {
+    fontSize: 16,
+    fontWeight: IS_IOS ? '400' : '500',
+    lineHeight: IS_IOS ? 23 : 24,
+  },
+  muted: {
+    fontSize: 16,
+    fontWeight: IS_IOS ? '400' : '500',
+    lineHeight: IS_IOS ? 23 : 24,
+  },
+  title: {
+    fontSize: IS_IOS ? 30 : 28,
+    fontWeight: '700',
+    lineHeight: IS_IOS ? 36 : 34,
+    letterSpacing: IS_IOS ? 0.2 : 0,
+  },
+  subtitle: {
+    fontSize: IS_IOS ? 21 : 20,
+    fontWeight: '600',
+    lineHeight: IS_IOS ? 27 : 26,
+  },
+  badge: {
+    fontSize: 12,
+    fontWeight: IS_IOS ? '600' : '700',
+    lineHeight: 16,
+    letterSpacing: 0.2,
+  },
+});
+
 export function ThemeText({ style, variant = 'default', ...props }: ThemeTextProps) {
   const theme = useAppTheme();
-  const isIos = Platform.OS === 'ios';
-
   const color = variant === 'muted' ? theme.mutedText : theme.text;
 
-  const textStyle =
-    variant === 'title'
-      ? {
-          fontSize: isIos ? 30 : 28,
-          fontWeight: isIos ? ('700' as const) : ('700' as const),
-          lineHeight: isIos ? 36 : 34,
-          letterSpacing: isIos ? 0.2 : 0,
-        }
-      : variant === 'subtitle'
-        ? {
-            fontSize: isIos ? 21 : 20,
-            fontWeight: isIos ? ('600' as const) : ('600' as const),
-            lineHeight: isIos ? 27 : 26,
-          }
-        : variant === 'badge'
-          ? {
-              fontSize: 12,
-              fontWeight: isIos ? ('600' as const) : ('700' as const),
-              lineHeight: 16,
-              letterSpacing: 0.2,
-            }
-          : {
-              fontSize: 16,
-              fontWeight: isIos ? ('400' as const) : ('500' as const),
-              lineHeight: isIos ? 23 : 24,
-            };
-
-  return <Text style={[{ color: color }, textStyle, style]} {...props} />;
+  return <Text style={[variantStyles[variant], { color: color }, style]} {...props} />;
 }

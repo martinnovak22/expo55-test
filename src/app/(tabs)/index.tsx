@@ -1,13 +1,13 @@
-import { Platform, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { OverviewShowcase } from '@/components/overview-showcase';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { Product } from '@/constants/product';
+import { IS_IOS } from '@/theme/platform';
 import { ScreenSpacing, Spacing } from '@/theme/spacing';
 import { useScrollContentPaddingBottom } from '@/theme/use-scroll-content-padding';
 
 export default function HomeScreen() {
-  const isIos = Platform.OS === 'ios';
   const paddingBottom = useScrollContentPaddingBottom();
 
   return (
@@ -15,7 +15,7 @@ export default function HomeScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.content,
-          isIos && styles.contentIos,
+          IS_IOS && styles.contentIos,
           { paddingBottom: paddingBottom },
         ]}
         showsVerticalScrollIndicator={false}

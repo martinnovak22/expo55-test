@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { DemoCard } from '@/components/demo-card';
 import { LivePressable } from '@/components/live-pressable';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { Product } from '@/constants/product';
+import { IS_ANDROID, IS_IOS } from '@/theme/platform';
 import { Border, ControlSize, Radius, ScreenSpacing, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useScrollContentPaddingBottom } from '@/theme/use-scroll-content-padding';
@@ -18,17 +19,17 @@ const transactionItems = [
 
 export default function PaletteScreen() {
   const theme = useAppTheme();
-  const isAndroid = Platform.OS === 'android';
-  const isIos = Platform.OS === 'ios';
   const paddingBottom = useScrollContentPaddingBottom();
-  const [selectedMerchant, setSelectedMerchant] = useState(transactionItems[0]?.merchant ?? '');
+  const [selectedMerchant, setSelectedMerchant] = useState<string>(
+    transactionItems[0]?.merchant ?? ''
+  );
 
   return (
     <ThemeSurface variant={'background'} style={styles.screen}>
       <ScrollView
         contentContainerStyle={[
           styles.content,
-          isIos && styles.contentIos,
+          IS_IOS && styles.contentIos,
           { paddingBottom: paddingBottom },
         ]}
         showsVerticalScrollIndicator={false}
@@ -42,7 +43,7 @@ export default function PaletteScreen() {
           variant={'surface'}
           style={[
             styles.tonePanel,
-            isAndroid && styles.androidTonePanel,
+            IS_ANDROID && styles.androidTonePanel,
             { borderColor: theme.border },
           ]}
         >

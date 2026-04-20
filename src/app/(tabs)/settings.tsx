@@ -5,7 +5,7 @@ import { DemoCard } from '@/components/demo-card';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { Product } from '@/constants/product';
-import { isIos26OrLater } from '@/theme/platform';
+import { IS_ANDROID, IS_IOS, IS_IOS_26_OR_LATER } from '@/theme/platform';
 import { Border, Radius, ScreenSpacing, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useScrollContentPaddingBottom } from '@/theme/use-scroll-content-padding';
@@ -66,9 +66,6 @@ function StatusChip({ label, tone }: { label: string; tone: StatusTone }) {
 
 export default function SettingsScreen() {
   const theme = useAppTheme();
-  const ios26OrLater = isIos26OrLater();
-  const isAndroid = Platform.OS === 'android';
-  const isIos = Platform.OS === 'ios';
   const paddingBottom = useScrollContentPaddingBottom();
 
   return (
@@ -76,7 +73,7 @@ export default function SettingsScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.content,
-          isIos && styles.contentIos,
+          IS_IOS && styles.contentIos,
           { paddingBottom: paddingBottom },
         ]}
         showsVerticalScrollIndicator={false}
@@ -88,7 +85,7 @@ export default function SettingsScreen() {
 
         <ThemeSurface
           variant={'surface'}
-          style={[styles.runtimeBanner, isAndroid && styles.androidPanel, { borderColor: theme.border }]}
+          style={[styles.runtimeBanner, IS_ANDROID && styles.androidPanel, { borderColor: theme.border }]}
         >
           <View style={styles.bannerTopRow}>
             <View style={styles.bannerTextWrap}>
@@ -100,8 +97,8 @@ export default function SettingsScreen() {
             <StatusChip label={theme.scheme === 'dark' ? 'Dark mode' : 'Light mode'} tone={'good'} />
             <StatusChip label={Platform.OS.toUpperCase()} tone={'good'} />
             <StatusChip
-              label={ios26OrLater ? 'iOS glass ready' : 'Standard accessory mode'}
-              tone={ios26OrLater ? 'good' : 'neutral'}
+              label={IS_IOS_26_OR_LATER ? 'iOS glass ready' : 'Standard accessory mode'}
+              tone={IS_IOS_26_OR_LATER ? 'good' : 'neutral'}
             />
           </View>
         </ThemeSurface>
@@ -112,11 +109,11 @@ export default function SettingsScreen() {
           <DiagnosticRow label={'Resolved scheme'} value={theme.scheme} />
           <DiagnosticRow
             label={'iOS 26+ features'}
-            value={ios26OrLater ? 'enabled' : 'fallback mode'}
+            value={IS_IOS_26_OR_LATER ? 'enabled' : 'fallback mode'}
           />
           <DiagnosticRow
             label={'Dynamic color source'}
-            value={isAndroid ? 'Material dynamic' : 'iOS system colors'}
+            value={IS_ANDROID ? 'Material dynamic' : 'iOS system colors'}
           />
         </DemoCard>
 
@@ -140,7 +137,10 @@ export default function SettingsScreen() {
             <ThemeText variant={'muted'} style={styles.healthLabel}>
               Bottom accessory behavior
             </ThemeText>
-            <StatusChip label={ios26OrLater ? 'enabled' : 'fallback'} tone={ios26OrLater ? 'good' : 'neutral'} />
+            <StatusChip
+              label={IS_IOS_26_OR_LATER ? 'enabled' : 'fallback'}
+              tone={IS_IOS_26_OR_LATER ? 'good' : 'neutral'}
+            />
           </View>
         </DemoCard>
 
@@ -160,9 +160,15 @@ export default function SettingsScreen() {
           title={'Pre-Release QA Checklist'}
           subtitle={'Manual checks for this showcase screen set.'}
         >
-          <ThemeText variant={'muted'}>1. Switch tabs and verify labels/icons track active state.</ThemeText>
-          <ThemeText variant={'muted'}>2. Toggle device theme and confirm immediate palette updates.</ThemeText>
-          <ThemeText variant={'muted'}>3. Validate transaction row readability on light and dark surfaces.</ThemeText>
+          <ThemeText variant={'muted'}>
+            1. Switch tabs and verify labels/icons track active state.
+          </ThemeText>
+          <ThemeText variant={'muted'}>
+            2. Toggle device theme and confirm immediate palette updates.
+          </ThemeText>
+          <ThemeText variant={'muted'}>
+            3. Validate transaction row readability on light and dark surfaces.
+          </ThemeText>
           <ThemeText variant={'muted'}>
             4. On iOS 26+, confirm native glass accessory appears and collapses on scroll.
           </ThemeText>

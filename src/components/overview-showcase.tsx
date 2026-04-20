@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { DemoCard } from '@/components/demo-card';
 import { LivePressable } from '@/components/live-pressable';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { Product } from '@/constants/product';
+import { IS_ANDROID } from '@/theme/platform';
 import { Border, ControlSize, Elevation, Radius, Spacing } from '@/theme/spacing';
 import { useAppTheme } from '@/theme/use-app-theme';
 
@@ -34,7 +35,6 @@ const insightItems = [
 
 export function OverviewShowcase() {
   const theme = useAppTheme();
-  const isAndroid = Platform.OS === 'android';
   const [transferTo, setTransferTo] = useState('High Yield Savings');
   const [transferAmount, setTransferAmount] = useState('350');
   const [lastAction, setLastAction] = useState<'none' | 'reset' | 'schedule' | 'quick-action'>(
@@ -45,7 +45,7 @@ export function OverviewShowcase() {
     <View style={styles.container}>
       <ThemeSurface
         variant={'surface'}
-        style={[styles.heroCard, isAndroid && styles.androidPanel, { borderColor: theme.border }]}
+        style={[styles.heroCard, IS_ANDROID && styles.androidPanel, { borderColor: theme.border }]}
       >
         <View style={styles.heroTop}>
           <View style={styles.heroTextWrap}>
@@ -76,7 +76,7 @@ export function OverviewShowcase() {
           <ThemeSurface
             key={account.title}
             variant={'muted'}
-            style={[styles.accountCard, isAndroid && styles.androidPanel, { borderColor: theme.border }]}
+            style={[styles.accountCard, IS_ANDROID && styles.androidPanel, { borderColor: theme.border }]}
           >
             <ThemeText variant={'muted'}>{account.title}</ThemeText>
             <ThemeText variant={'subtitle'}>{account.amount}</ThemeText>
@@ -127,7 +127,7 @@ export function OverviewShowcase() {
         variant={'surface'}
         style={[
           styles.allocationPanel,
-          isAndroid && styles.androidPanel,
+          IS_ANDROID && styles.androidPanel,
           { borderColor: theme.border },
         ]}
       >
@@ -164,7 +164,7 @@ export function OverviewShowcase() {
           key={item.title}
           containerStyle={[
             styles.cardPressable,
-            isAndroid && styles.cardPressableAndroid,
+            IS_ANDROID && styles.cardPressableAndroid,
             { shadowColor: theme.text },
           ]}
           contentStyle={styles.cardContent}
@@ -175,7 +175,7 @@ export function OverviewShowcase() {
             variant={index % 2 === 0 ? 'surface' : 'muted'}
             style={[
               styles.itemCard,
-              isAndroid && styles.androidPanel,
+              IS_ANDROID && styles.androidPanel,
               { borderColor: theme.border },
             ]}
           >
@@ -199,7 +199,7 @@ export function OverviewShowcase() {
         variant={'surface'}
         style={[
           styles.formSection,
-          isAndroid && styles.androidPanel,
+          IS_ANDROID && styles.androidPanel,
           { borderColor: theme.border },
         ]}
       >
@@ -225,7 +225,7 @@ export function OverviewShowcase() {
             autoCapitalize={'words'}
             style={[
               styles.input,
-              isAndroid && styles.inputAndroid,
+              IS_ANDROID && styles.inputAndroid,
               {
                 backgroundColor: theme.mutedSurface,
                 borderColor: theme.border,
@@ -248,7 +248,7 @@ export function OverviewShowcase() {
             keyboardType={'decimal-pad'}
             style={[
               styles.input,
-              isAndroid && styles.inputAndroid,
+              IS_ANDROID && styles.inputAndroid,
               {
                 backgroundColor: theme.mutedSurface,
                 borderColor: theme.border,
@@ -268,7 +268,7 @@ export function OverviewShowcase() {
             containerStyle={styles.buttonPressable}
             contentStyle={[
               styles.secondaryButton,
-              isAndroid && styles.secondaryButtonAndroid,
+              IS_ANDROID && styles.secondaryButtonAndroid,
               { borderColor: theme.border },
             ]}
             androidRippleColor={theme.mutedSurface}
@@ -280,7 +280,7 @@ export function OverviewShowcase() {
             containerStyle={styles.buttonPressable}
             contentStyle={[
               styles.primaryButton,
-              isAndroid && styles.primaryButtonAndroid,
+              IS_ANDROID && styles.primaryButtonAndroid,
               { backgroundColor: theme.accent },
             ]}
             androidRippleColor={theme.mutedSurface}
