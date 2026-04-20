@@ -2,6 +2,7 @@ import { Color } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Product } from '@/constants/product';
 import { ThemeText } from '@/components/theme-text';
 import { hasNativeBottomAccessory } from '@/theme/platform';
 import { ControlSize, ScreenSpacing, Spacing } from '@/theme/spacing';
@@ -23,7 +24,7 @@ export default function TabsLayout() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <NativeTabs
-        backgroundColor={isAndroid ? theme.surface : undefined}
+        backgroundColor={isAndroid ? theme.surface : Color.ios.systemGroupedBackground}
         blurEffect={ios26OrLater ? 'systemUltraThinMaterial' : undefined}
         minimizeBehavior={ios26OrLater ? 'onScrollDown' : undefined}
         indicatorColor={isAndroid ? theme.accent : undefined}
@@ -31,25 +32,25 @@ export default function TabsLayout() {
         labelStyle={tabLabelColors}
       >
         <NativeTabs.Trigger name={'index'}>
-          <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label>{Product.tabs.overview}</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon
-            sf={{ default: 'house', selected: 'house.fill' }}
-            md={'home'}
+            sf={{ default: 'chart.line.uptrend.xyaxis', selected: 'chart.line.uptrend.xyaxis.circle.fill' }}
+            md={'show_chart'}
             selectedColor={isAndroid ? theme.onAccent : undefined}
           />
         </NativeTabs.Trigger>
 
         <NativeTabs.Trigger name={'palette'}>
-          <NativeTabs.Trigger.Label>Palette</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label>{Product.tabs.activity}</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon
-            sf={{ default: 'paintpalette', selected: 'paintpalette.fill' }}
-            md={'palette'}
+            sf={{ default: 'list.bullet.rectangle', selected: 'list.bullet.rectangle.fill' }}
+            md={'receipt_long'}
             selectedColor={isAndroid ? theme.onAccent : undefined}
           />
         </NativeTabs.Trigger>
 
         <NativeTabs.Trigger name={'settings'}>
-          <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label>{Product.tabs.diagnostics}</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon
             sf={{ default: 'gearshape', selected: 'gearshape.fill' }}
             md={'settings'}
@@ -62,7 +63,7 @@ export default function TabsLayout() {
             <View style={styles.accessoryInset}>
               <View style={styles.accessory}>
                 <ThemeText variant={'badge'} style={styles.accessoryText}>
-                  iOS 26+ glass accessory active
+                  {Product.shortName} native glass accessory
                 </ThemeText>
               </View>
             </View>
