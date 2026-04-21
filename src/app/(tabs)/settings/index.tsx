@@ -6,6 +6,7 @@ import { Screen } from '@/components/screen';
 import { ThemeSurface } from '@/components/theme-surface';
 import { ThemeText } from '@/components/theme-text';
 import { Product } from '@/constants/product';
+import { useActivityTabState } from '@/features/activity/tab-state';
 import { IS_ANDROID, IS_IOS, IS_IOS_26_OR_LATER } from '@/theme/platform';
 import { Border, Radius, Spacing } from '@/theme/spacing';
 import { useAppTheme, useThemePreferences } from '@/theme/use-app-theme';
@@ -67,6 +68,10 @@ function StatusChip({ label, tone }: { label: string; tone: StatusTone }) {
 export default function SettingsScreen() {
   const theme = useAppTheme();
   const { useAndroidDynamicColor, setUseAndroidDynamicColor } = useThemePreferences();
+  const { disableTransparentOnScrollEdge, setDisableTransparentOnScrollEdge } =
+    useActivityTabState();
+  const isAndroidProbeAvailable = IS_ANDROID;
+  const isIosScrollEdgeProbeAvailable = IS_IOS;
 
   return (
     <Screen
@@ -76,6 +81,7 @@ export default function SettingsScreen() {
       }
       showTitle={!IS_IOS}
       useNativeHeader={IS_IOS}
+      contentContainerStyle={IS_IOS ? styles.iosScrollEdgeDemoContent : undefined}
     >
       <ThemeSurface
         variant={'surface'}
@@ -107,19 +113,60 @@ export default function SettingsScreen() {
           'Toggle dynamic color sourcing to compare system palette vs static fallback tokens.'
         }
       >
-        <View style={styles.toggleRow}>
+        <View style={styles.probeHeaderRow}>
+          <StatusChip
+            label={
+              isAndroidProbeAvailable ? 'Android only • active here' : 'Android only • unavailable'
+            }
+            tone={isAndroidProbeAvailable ? 'good' : 'neutral'}
+          />
+        </View>
+        <View style={[styles.toggleRow, !isAndroidProbeAvailable && styles.toggleRowDisabled]}>
           <View style={styles.toggleTextWrap}>
             <ThemeText>{'Use dynamic color roles'}</ThemeText>
             <ThemeText variant={'muted'}>
-              {IS_ANDROID
+              {isAndroidProbeAvailable
                 ? 'On uses Material You tokens; off uses built-in fallback palette.'
                 : 'Dynamic color source switching is Android-only.'}
             </ThemeText>
           </View>
           <Switch
-            value={IS_ANDROID && useAndroidDynamicColor}
+            value={isAndroidProbeAvailable && useAndroidDynamicColor}
             onValueChange={setUseAndroidDynamicColor}
-            disabled={!IS_ANDROID}
+            disabled={!isAndroidProbeAvailable}
+          />
+        </View>
+      </DemoCard>
+
+      <DemoCard
+        title={'iOS Tab Bar Scroll Edge'}
+        subtitle={
+          'Toggle native tab bar transparency behavior when content reaches the scroll edge.'
+        }
+      >
+        <View style={styles.probeHeaderRow}>
+          <StatusChip
+            label={
+              isIosScrollEdgeProbeAvailable ? 'iOS only • active here' : 'iOS only • unavailable'
+            }
+            tone={isIosScrollEdgeProbeAvailable ? 'good' : 'neutral'}
+          />
+        </View>
+        <View
+          style={[styles.toggleRow, !isIosScrollEdgeProbeAvailable && styles.toggleRowDisabled]}
+        >
+          <View style={styles.toggleTextWrap}>
+            <ThemeText>{'Disable transparent scroll edge'}</ThemeText>
+            <ThemeText variant={'muted'}>
+              {isIosScrollEdgeProbeAvailable
+                ? 'On keeps the tab bar background solid while scrolling.'
+                : 'This behavior is available on iOS only.'}
+            </ThemeText>
+          </View>
+          <Switch
+            value={isIosScrollEdgeProbeAvailable && disableTransparentOnScrollEdge}
+            onValueChange={setDisableTransparentOnScrollEdge}
+            disabled={!isIosScrollEdgeProbeAvailable}
           />
         </View>
       </DemoCard>
@@ -132,8 +179,14 @@ export default function SettingsScreen() {
         <DiagnosticRow label={'Platform version'} value={String(Platform.Version)} />
         <DiagnosticRow label={'Resolved scheme'} value={theme.scheme} />
         <DiagnosticRow
+          label={'Tab bar transparent on edge'}
+          value={
+            IS_IOS ? (disableTransparentOnScrollEdge ? 'disabled' : 'enabled') : 'not applicable'
+          }
+        />
+        <DiagnosticRow
           label={'Android dynamic color'}
-          value={useAndroidDynamicColor ? 'enabled' : 'disabled'}
+          value={IS_ANDROID ? (useAndroidDynamicColor ? 'enabled' : 'disabled') : 'not applicable'}
         />
         <DiagnosticRow
           label={'iOS 26+ features'}
@@ -201,6 +254,24 @@ export default function SettingsScreen() {
           4. On iOS 26+, confirm native glass accessory appears and collapses on scroll.
         </ThemeText>
       </DemoCard>
+
+      {IS_IOS ? (
+        <DemoCard
+          title={'Scroll Edge Visual Probe'}
+          subtitle={
+            'Use this high-contrast block near the tab bar to compare transparent edge on/off.'
+          }
+        >
+          <View style={styles.visualProbeFrame}>
+            <View style={[styles.visualProbeBand, { backgroundColor: theme.accent }]} />
+            <View style={[styles.visualProbeBand, { backgroundColor: theme.surface }]} />
+            <View style={[styles.visualProbeBand, { backgroundColor: theme.secondary }]} />
+          </View>
+          <ThemeText variant={'muted'}>
+            Scroll this card to the bottom edge of the screen, then toggle the setting above.
+          </ThemeText>
+        </DemoCard>
+      ) : null}
     </Screen>
   );
 }
@@ -248,9 +319,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: Spacing.sm,
   },
+  toggleRowDisabled: {
+    opacity: 0.45,
+  },
   toggleTextWrap: {
     flex: 1,
     gap: Spacing.xxs,
+  },
+  probeHeaderRow: {
+    alignItems: 'flex-start',
   },
   healthRow: {
     flexDirection: 'row',
@@ -281,5 +358,16 @@ const styles = StyleSheet.create({
     height: Spacing.md,
     borderRadius: Radius.xs,
     borderWidth: Border.regular,
+  },
+  iosScrollEdgeDemoContent: {
+    paddingBottom: Spacing.lg,
+  },
+  visualProbeFrame: {
+    borderRadius: Radius.sm,
+    overflow: 'hidden',
+    borderWidth: Border.regular,
+  },
+  visualProbeBand: {
+    height: Spacing.xl,
   },
 });

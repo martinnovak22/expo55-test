@@ -42,7 +42,7 @@ function BottomAccessoryChip() {
 function TabsContent() {
   const pathname = usePathname();
   const theme = useAppTheme();
-  const { filter } = useActivityTabState();
+  const { disableTransparentOnScrollEdge, filter } = useActivityTabState();
 
   const pendingCount = ACTIVITY_ITEMS.filter((item) => item.status === 'pending').length;
 
@@ -53,7 +53,7 @@ function TabsContent() {
   const tabLabelColors = IS_ANDROID
     ? {
         default: { color: theme.mutedText },
-        selected: { color: theme.onAccent },
+        selected: { color: theme.accent },
       }
     : undefined;
   const showActivityAccessory = pathname === '/palette';
@@ -62,7 +62,9 @@ function TabsContent() {
     <NativeTabs
       backgroundColor={IS_ANDROID ? theme.surface : Color.ios.systemGroupedBackground}
       blurEffect={HAS_NATIVE_BOTTOM_ACCESSORY ? 'systemUltraThinMaterial' : undefined}
+      disableTransparentOnScrollEdge={IS_IOS ? disableTransparentOnScrollEdge : undefined}
       minimizeBehavior={IS_IOS ? 'onScrollDown' : undefined}
+      labelVisibilityMode={IS_ANDROID ? 'labeled' : undefined}
       indicatorColor={IS_ANDROID ? theme.accent : undefined}
       iconColor={tabIconColors}
       labelStyle={tabLabelColors}
@@ -75,7 +77,6 @@ function TabsContent() {
             selected: 'chart.line.uptrend.xyaxis.circle.fill',
           }}
           md={'show_chart'}
-          selectedColor={IS_ANDROID ? theme.onAccent : undefined}
         />
       </NativeTabs.Trigger>
 
@@ -84,7 +85,6 @@ function TabsContent() {
         <NativeTabs.Trigger.Icon
           sf={{ default: 'list.bullet.rectangle', selected: 'list.bullet.rectangle.fill' }}
           md={'receipt_long'}
-          selectedColor={IS_ANDROID ? theme.onAccent : undefined}
         />
       </NativeTabs.Trigger>
 
@@ -104,7 +104,6 @@ function TabsContent() {
         <NativeTabs.Trigger.Icon
           sf={{ default: 'gearshape', selected: 'gearshape.fill' }}
           md={'settings'}
-          selectedColor={IS_ANDROID ? theme.onAccent : undefined}
         />
         <NativeTabs.Trigger.Badge>
           {pendingCount > 0 ? String(pendingCount) : undefined}

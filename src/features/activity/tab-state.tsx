@@ -10,6 +10,8 @@ type ActivityTabStateValue = {
   cycleFilter: () => void;
   searchQuery: string;
   setSearchQuery: (value: string) => void;
+  disableTransparentOnScrollEdge: boolean;
+  setDisableTransparentOnScrollEdge: (value: boolean) => void;
 };
 
 const ActivityTabStateContext = createContext<ActivityTabStateValue | null>(null);
@@ -17,6 +19,7 @@ const ActivityTabStateContext = createContext<ActivityTabStateValue | null>(null
 export function ActivityTabStateProvider({ children }: { children: ReactNode }) {
   const [filter, setFilter] = useState<ActivityFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [disableTransparentOnScrollEdge, setDisableTransparentOnScrollEdge] = useState(false);
 
   const cycleFilter = useCallback(() => {
     setFilter((currentFilter) => {
@@ -33,8 +36,10 @@ export function ActivityTabStateProvider({ children }: { children: ReactNode }) 
       cycleFilter,
       searchQuery,
       setSearchQuery,
+      disableTransparentOnScrollEdge,
+      setDisableTransparentOnScrollEdge,
     }),
-    [cycleFilter, filter, searchQuery]
+    [cycleFilter, disableTransparentOnScrollEdge, filter, searchQuery]
   );
 
   return (
