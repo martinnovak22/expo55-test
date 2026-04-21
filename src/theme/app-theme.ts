@@ -62,24 +62,32 @@ function resolvePalette(
   fallback: ThemePalette,
   { useAndroidDynamicColor }: ThemeBuildOptions
 ): ThemePalette {
+  const androidBackground = useAndroidDynamicColor
+    ? Color.android.dynamic.surfaceDim
+    : fallback.background;
+  const androidSurface = useAndroidDynamicColor
+    ? Color.android.dynamic.surfaceContainerLow
+    : fallback.surface;
+  const androidMutedSurface = useAndroidDynamicColor
+    ? Color.android.dynamic.surfaceContainerHigh
+    : fallback.mutedSurface;
+
   return {
     background:
       Platform.select({
-        android: useAndroidDynamicColor ? Color.android.dynamic.background : fallback.background,
+        android: androidBackground,
         ios: Color.ios.systemGroupedBackground,
         default: fallback.background,
       }) ?? fallback.background,
     surface:
       Platform.select({
-        android: useAndroidDynamicColor ? Color.android.dynamic.surface : fallback.surface,
+        android: androidSurface,
         ios: Color.ios.secondarySystemGroupedBackground,
         default: fallback.surface,
       }) ?? fallback.surface,
     mutedSurface:
       Platform.select({
-        android: useAndroidDynamicColor
-          ? Color.android.dynamic.surfaceContainer
-          : fallback.mutedSurface,
+        android: androidMutedSurface,
         ios: Color.ios.tertiarySystemGroupedBackground,
         default: fallback.mutedSurface,
       }) ?? fallback.mutedSurface,
