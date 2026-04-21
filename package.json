@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "format": "biome format --write .",
     "check": "biome format .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "qa": "yarn check && yarn typecheck",
+    "qa:capture:ios": "bash -lc 'CHECK=${npm_config_check:?Use --check=NN}; STATE=${npm_config_state:?Use --state=before|after}; DATE=${npm_config_date:-$(date +%F)}; OUT=\"qa-evidence/${DATE}/check-${CHECK}-ios-${STATE}.png\"; mkdir -p \"$(dirname \"$OUT\")\"; xcrun simctl io booted screenshot \"$OUT\"; echo \"Saved screenshot: $OUT\"'",
+    "qa:capture:android": "bash -lc 'CHECK=${npm_config_check:?Use --check=NN}; STATE=${npm_config_state:?Use --state=before|after}; DATE=${npm_config_date:-$(date +%F)}; OUT=\"qa-evidence/${DATE}/check-${CHECK}-android-${STATE}.png\"; mkdir -p \"$(dirname \"$OUT\")\"; adb exec-out screencap -p > \"$OUT\"; echo \"Saved screenshot: $OUT\"'"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.15.5",
